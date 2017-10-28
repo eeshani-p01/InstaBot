@@ -7,10 +7,22 @@ from pprint import pprint
 
 BASE_URL = 'https://api.instagram.com/v1/'
 TOKEN = '4013952194.906cb6c.76bf3702386748f993f1d1d457549779'
+ACCESS_TOKEN = '?access_token={token}'.format(token=TOKEN)
 
+
+def get_user_post():
+    END_POINT = 'users/self/media/recent/'
+    user_media = requests.get(BASE_URL+END_POINT+ACCESS_TOKEN).json()
+    # pprint(user_media)
+    if user_media['meta']['code'] == 200:
+        #extract post ID
+        print user_media['data'][0]['id']
+    else:
+        print "Status code other than 200 received!"
 
 def self_info():
-    request_url = (BASE_URL + 'users/self/?access_token=%s') %(TOKEN)
+    END_POINT = 'users/self/'
+    request_url = (BASE_URL + END_POINT+ACCESS_TOKEN)
     print 'GET request url : %s' % (request_url)
     user_info = requests.get(request_url).json()
     # pprint(user_info)
@@ -23,13 +35,13 @@ def self_info():
             print 'No. of posts: %s' % (user_info['data']['counts']['media'])
         else:
             print "ERROR: Data not found!!"
+        get_user_post()
     else:
         print 'Status code other than 200 received!'
 
 # def get_info():
-#     # END_POINT = '/users/self/'
-#     # ACCESS_TOKEN = '?access_token={token}'.format(token=TOKEN)
-#     user_info = requests.get(BASE_URL+END_POINT+ACCESS_TOKEN)
+#     #
 #     pprint(user_info.json())
+
 
 self_info()
