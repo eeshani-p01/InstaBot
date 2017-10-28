@@ -9,8 +9,22 @@ BASE_URL = 'https://api.instagram.com/v1/'
 TOKEN = '4013952194.906cb6c.76bf3702386748f993f1d1d457549779'
 ACCESS_TOKEN = '?access_token={token}'.format(token=TOKEN)
 
+def get_user_id(name):
+    url = BASE_URL+ 'users/search?q={name}&access_token={token}'.format(name=name,token=TOKEN)
+    response = requests.get(url).json()
+
+    pprint(response)
+    # return response['data'][0]['id']
+
 
 def get_user_post():
+    pass
+
+def get_user_info():
+    username = raw_input("Enter the username")
+    user_id = get_user_id(username)
+
+def get_own_post():
     END_POINT = 'users/self/media/recent/'
     user_media = requests.get(BASE_URL+END_POINT+ACCESS_TOKEN).json()
     # pprint(user_media)
@@ -35,7 +49,7 @@ def self_info():
             print 'No. of posts: %s' % (user_info['data']['counts']['media'])
         else:
             print "ERROR: Data not found!!"
-        get_user_post()
+        get_own_post()
     else:
         print 'Status code other than 200 received!'
 
@@ -45,3 +59,4 @@ def self_info():
 
 
 self_info()
+get_user_info()
