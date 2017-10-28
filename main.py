@@ -1,5 +1,6 @@
 import requests
 from pprint import pprint
+import urllib
 
 # response = requests.get('https://jsonbin.io/b/59d0f30408be13271f7df29c').json()
 # APP_ACCESS_TOKEN = response['access_token']
@@ -23,19 +24,21 @@ def get_user_id(name):
         exit()
 
 
-def get_user_post(username):
-    user_id = get_user_id(username)
-    if user_id == None:
-        print 'User does not exist!'
-        exit()
-    request_url = BASE_URL + "users/{user-id}/media/recent/?access_token={token}".format(user-id=user_id,token=TOKEN)
+# def get_user_post(username):
+#     user_id = get_user_id(username)
+#     if user_id == None:
+#         print 'User does not exist!'
+#         exit()
+#     request_url = BASE_URL + "users/{user-id}/media/recent/?access_token={token}".format(user-id=user_id,token=TOKEN)
+#     user_info = requests.get(request_url).json()
+
 
 
 def get_user_info():
     username = raw_input("Enter the username")
     user_id = get_user_id(username)
     if user_id == None:
-        print "User does not exist!"
+        print "This user does not exist!"
         exit()
     request_url = BASE_URL + "users/{id}?access_token={token}".format(id=user_id,token=TOKEN)
     user_info = requests.get(request_url).json()
@@ -59,7 +62,14 @@ def get_own_post():
     # pprint(user_media)
     if user_media['meta']['code'] == 200:
         #extract post ID
-        print user_media['data'][0]['id']
+        if len(user_media['data']):
+            img_name = user_media['data'][0]['id']+'.jpeg'
+            img_url = user_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(img_url,img_name)
+            print "Your image has been saved"
+        else:
+            print "Post doesn't exist"
+        # pprint(user_media['data'][0])
     else:
         print "Status code other than 200 received!"
 
@@ -88,4 +98,4 @@ def self_info():
 
 
 self_info()
-get_user_info()
+# get_user_info()
