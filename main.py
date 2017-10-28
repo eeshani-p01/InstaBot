@@ -24,13 +24,25 @@ def get_user_id(name):
         exit()
 
 
-# def get_user_post(username):
-#     user_id = get_user_id(username)
-#     if user_id == None:
-#         print 'User does not exist!'
-#         exit()
-#     request_url = BASE_URL + "users/{user-id}/media/recent/?access_token={token}".format(user-id=user_id,token=TOKEN)
-#     user_info = requests.get(request_url).json()
+def get_user_post(username):
+    user_id = get_user_id(username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+    request_url = BASE_URL + "users/{userid}/media/recent/?access_token={token}".format(userid=user_id,token=TOKEN)
+    user_media = requests.get(request_url).json()
+    if user_media['meta']['code'] == 200:
+        #extract post ID
+        if len(user_media['data']):
+            img_name = user_media['data'][0]['id']+'.jpeg'
+            img_url = user_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(img_url,img_name)
+            print "Your image has been saved"
+        else:
+            print "Post doesn't exist"
+        # pprint(user_media['data'][0])
+    else:
+        print "Status code other than 200 received!"
 
 
 
@@ -98,4 +110,4 @@ def self_info():
 
 
 self_info()
-# get_user_info()
+get_user_post('nimitsachdeva')
