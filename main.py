@@ -12,17 +12,42 @@ ACCESS_TOKEN = '?access_token={token}'.format(token=TOKEN)
 def get_user_id(name):
     url = BASE_URL+ 'users/search?q={name}&access_token={token}'.format(name=name,token=TOKEN)
     response = requests.get(url).json()
-
-    pprint(response)
-    # return response['data'][0]['id']
+    # pprint(response)
+    if response['meta']['code'] == 200:
+        if len(response['data']):
+            return response['data'][0]['id']
+        else:
+            return None
+    else:
+        print 'Status code other than 200 received!'
+        exit()
 
 
 def get_user_post():
     pass
 
+
 def get_user_info():
     username = raw_input("Enter the username")
     user_id = get_user_id(username)
+    if user_id == None:
+        print "User does not exist!"
+        exit()
+    request_url = BASE_URL + "users/{id}?access_token={token}".format(id=user_id,token=TOKEN)
+    user_info = requests.get(request_url).json()
+    # pprint(user_info)
+    if user_info['meta']['code'] == 200:
+        # print users details
+        if 'data' in user_info:
+            print 'Username: %s' % (user_info['data']['username'])
+            print 'No. of followers: %s' % (user_info['data']['counts']['followed_by'])
+            print 'No. of people you are following: %s' % (user_info['data']['counts']['follows'])
+            print 'No. of posts: %s' % (user_info['data']['counts']['media'])
+        else:
+            print "There is no data for this user!!!"
+    else:
+        print 'Status code other than 200 received!'
+
 
 def get_own_post():
     END_POINT = 'users/self/media/recent/'
