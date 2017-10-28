@@ -23,8 +23,12 @@ def get_user_id(name):
         exit()
 
 
-def get_user_post():
-    pass
+def get_user_post(username):
+    user_id = get_user_id(username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+    request_url = BASE_URL + "users/{user-id}/media/recent/?access_token={token}".format(user-id=user_id,token=TOKEN)
 
 
 def get_user_info():
