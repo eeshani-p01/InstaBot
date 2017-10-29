@@ -173,6 +173,22 @@ def get_like_list(insta_username):
         print 'Status code other than 200 received!'
 
 
+def get_comment_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, APP_ACCESS_TOKEN)
+    comment_info = requests.get(request_url).json()
+
+    if comment_info['meta']['code'] == 200:
+        if len(comment_info['data']) > 0:
+            for user_info in comment_info['data']:
+                comment_text = user_info["text"]
+                comment_user = user_info["from"]["full_name"]
+                print ("Comment: {} \nAdded by: {}.\n\n").format(comment_text, comment_user)
+        else:
+            print 'There are no existing comments on the post!'
+    else:
+        print 'Status code other than 200 received!'
+
 
 def get_post_id(username):
     id = get_user_id(username)
