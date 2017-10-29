@@ -114,6 +114,19 @@ def like_a_post(insta_username):
     else:
         print 'Your like was unsuccessful. Try again!'
 
+
+def post_a_comment(insta_username):
+    media_id = get_post_id(insta_username)
+    comment = raw_input("Your comment: ")
+    payload = {"access_token": TOKEN, "text" : comment}
+    request_url = (BASE_URL + 'media/{}/comments').format(media_id)
+    make_comment = requests.post(request_url, payload).json()
+    if make_comment['meta']['code'] == 200:
+        print "Successfully added a new comment!"
+    else:
+        print "Unable to add comment. Try again!"
+
+
 def get_post_id(username):
     id = get_user_id(username)
     if id == None:
@@ -167,5 +180,6 @@ def start_bot():
             print "wrong choice"
 
 # start_bot()
-like_a_post('nimitsachdeva')
+# like_a_post('nimitsachdeva')
 # get_post_id('nimitsachdeva')
+post_a_comment('nimitsachdeva')
