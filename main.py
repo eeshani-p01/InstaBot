@@ -1,6 +1,8 @@
 import requests
 from pprint import pprint
 import urllib
+from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
 
 # response = requests.get('https://jsonbin.io/b/59d0f30408be13271f7df29c').json()
 # APP_ACCESS_TOKEN = response['access_token']
@@ -119,12 +121,42 @@ def post_a_comment(insta_username):
     media_id = get_post_id(insta_username)
     comment = raw_input("Your comment: ")
     payload = {"access_token": TOKEN, "text" : comment}
-    request_url = (BASE_URL + 'media/{}/comments').format(media_id)
+    request_url = BASE_URL + 'media/{}/comments'.format(media_id)
     make_comment = requests.post(request_url, payload).json()
     if make_comment['meta']['code'] == 200:
         print "Successfully added a new comment!"
     else:
         print "Unable to add comment. Try again!"
+
+
+def delete_negative_comment(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = BASE_URL + 'media/{}/comments/?access_token={}'.format(media_id,TOKEN)
+    # print 'GET request url : %s' % (request_url)
+    comment_info = requests.get(request_url).json()
+    if comment_info['meta']['code'] == 200:
+        if len(comment_info['data']):
+            for index in range(0, len(comment_info['data'])):
+                comment_id = comment_info['data'][index]['id']
+                comment_text = comment_info['data'][index]['text']
+                blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())
+                if (blob.sentiment.p_neg > blob.sentiment.p_pos):
+                    print 'Negative comment : %s' % (comment_text)
+                    delete_url = BASE_URL + 'media/{}/comments/{}/?access_token={}'.format(media_id, comment_id, TOKEN)
+                    # print 'DELETE request url : %s' % (delete_url)
+                    delete_info = requests.delete(delete_url).json()
+
+                    if delete_info['meta']['code'] == 200:
+                        print 'Comment successfully deleted!\n'
+                    else:
+                        print 'Unable to delete comment!'
+                else:
+                    print 'Positive comment : {}\n'.format(comment_text)
+        else:
+            print 'There are no existing comments on the post!'
+    else:
+        print 'Status code other than 200 received!'
+
 
 
 def get_post_id(username):
