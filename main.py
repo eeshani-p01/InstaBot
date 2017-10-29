@@ -46,8 +46,7 @@ def get_user_post(username):
 
 
 
-def get_user_info():
-    username = raw_input("Enter the username")
+def get_user_info(username):
     user_id = get_user_id(username)
     if user_id == None:
         print "This user does not exist!"
@@ -107,7 +106,34 @@ def self_info():
 # def get_info():
 #     #
 #     pprint(user_info.json())
+# self_info()
+# get_user_post('nimitsachdeva')
 
+def start_bot():
+    while True:
+        print '\n'
+        print 'Hey! Welcome to instaBot!'
+        print 'Here are your menu options:'
+        print "a.Get your own details\n"
+        print "b.Get details of a user by username\n"
+        print "c.Get your own recent post\n"
+        print "d.Get the recent post of a user by username\n"
+        print "z.Exit"
 
-self_info()
-get_user_post('nimitsachdeva')
+        choice = raw_input("Enter you choice: ")
+        if choice == "a":
+            self_info()
+        elif choice == "b":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_user_info(insta_username)
+        elif choice == "c":
+            get_own_post()
+        elif choice == "d":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_user_post(insta_username)
+        elif choice == "z":
+            exit()
+        else:
+            print "wrong choice"
+
+start_bot()
