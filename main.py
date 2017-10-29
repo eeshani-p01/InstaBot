@@ -103,6 +103,36 @@ def self_info():
     else:
         print 'Status code other than 200 received!'
 
+
+def like_a_post(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = BASE_URL + 'media/{}/likes'.format(media_id)
+    payload = {"access_token": TOKEN}
+    post_a_like = requests.post(request_url, payload).json()
+    if post_a_like['meta']['code'] == 200:
+        print 'Like was successful!'
+    else:
+        print 'Your like was unsuccessful. Try again!'
+
+def get_post_id(username):
+    id = get_user_id(username)
+    if id == None:
+        print "This user doesn't exist!"
+        exit()
+    request_url = BASE_URL + 'users/{user_id}/media/recent/?access_token={token}'.format(user_id=id, token=TOKEN)
+    user_media = requests.get(request_url).json()
+    if user_media['meta']['code'] == 200:
+        if len(user_media['data']) > 0:
+            # print user_media['data'][0]['id']
+            return user_media['data'][0]['id']
+        else:
+            print 'There is no recent post of the user!'
+            exit()
+    else:
+        print 'Status code other than 200 received!'
+        exit()
+
+
 # def get_info():
 #     #
 #     pprint(user_info.json())
@@ -136,4 +166,6 @@ def start_bot():
         else:
             print "wrong choice"
 
-start_bot()
+# start_bot()
+like_a_post('nimitsachdeva')
+# get_post_id('nimitsachdeva')
