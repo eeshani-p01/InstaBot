@@ -158,6 +158,21 @@ def delete_negative_comment(insta_username):
         print 'Status code other than 200 received!'
 
 
+def get_like_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = BASE_URL + 'media/{}/likes?access_token={}'.format(media_id,TOKEN)
+    like_info = requests.get(request_url).json()
+
+    if like_info['meta']['code'] == 200:
+        if len(like_info['data']) > 0:
+            for user_info in like_info['data']:
+                print ("Liked by: {}").format(user_info["full_name"])
+        else:
+            print 'There are no existing comments on the post!'
+    else:
+        print 'Status code other than 200 received!'
+
+
 
 def get_post_id(username):
     id = get_user_id(username)
