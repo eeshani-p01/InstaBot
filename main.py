@@ -175,7 +175,7 @@ def get_like_list(insta_username):
 
 def get_comment_list(insta_username):
     media_id = get_post_id(insta_username)
-    request_url = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, APP_ACCESS_TOKEN)
+    request_url = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, TOKEN)
     comment_info = requests.get(request_url).json()
 
     if comment_info['meta']['code'] == 200:
@@ -245,4 +245,7 @@ def start_bot():
 # start_bot()
 # like_a_post('nimitsachdeva')
 # get_post_id('nimitsachdeva')
-post_a_comment('nimitsachdeva')
+# post_a_comment('nimitsachdeva')
+# delete_negative_comment('nimitsachdeva')
+# get_like_list("nimitsachdeva")
+get_comment_list('nimitsachdeva')
