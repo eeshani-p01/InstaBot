@@ -33,3 +33,7 @@ def initialize_db():
     database.create_tables([User, Media, Comment], safe=True)
 
 initialize_db()
+
+new_user = User(user_id=5, username="eeshani_p",full_name="Eeshani Patel", follows_count=200,followed_by_count=300)
+new_user.save()
+print new_user.username
