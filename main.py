@@ -119,8 +119,8 @@ def self_info():
         print 'Status code other than 200 received!'
 
 
-def like_a_post(insta_username):
-    media_id = get_post_id(insta_username)
+def like_a_post(username):
+    media_id = get_post_id(username)
     request_url = BASE_URL + 'media/{}/likes'.format(media_id)
     payload = {"access_token": TOKEN}
     post_a_like = requests.post(request_url, payload).json()
@@ -130,8 +130,8 @@ def like_a_post(insta_username):
         print 'Your like was unsuccessful. Try again!'
 
 
-def post_a_comment(insta_username):
-    media_id = get_post_id(insta_username)
+def post_a_comment(username):
+    media_id = get_post_id(username)
     comment = raw_input("Your comment: ")
     payload = {"access_token": TOKEN, "text" : comment}
     request_url = BASE_URL + 'media/{}/comments'.format(media_id)
@@ -142,8 +142,8 @@ def post_a_comment(insta_username):
         print "Unable to add comment. Try again!"
 
 
-def delete_negative_comment(insta_username):
-    media_id = get_post_id(insta_username)
+def delete_negative_comment(username):
+    media_id = get_post_id(username)
     request_url = BASE_URL + 'media/{}/comments/?access_token={}'.format(media_id,TOKEN)
     # print 'GET request url : %s' % (request_url)
     comment_info = requests.get(request_url).json()
@@ -171,8 +171,8 @@ def delete_negative_comment(insta_username):
         print 'Status code other than 200 received!'
 
 
-def get_like_list(insta_username):
-    media_id = get_post_id(insta_username)
+def get_like_list(username):
+    media_id = get_post_id(username)
     request_url = BASE_URL + 'media/{}/likes?access_token={}'.format(media_id,TOKEN)
     like_info = requests.get(request_url).json()
 
@@ -186,8 +186,8 @@ def get_like_list(insta_username):
         print 'Status code other than 200 received!'
 
 
-def get_comment_list(insta_username):
-    media_id = get_post_id(insta_username)
+def get_comment_list(username):
+    media_id = get_post_id(username)
     request_url = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, TOKEN)
     comment_info = requests.get(request_url).json()
 
@@ -250,6 +250,25 @@ def add_user_details(insta_username):
         print 'Status code other than 200 received!'
         exit()
 
+
+def add_comments(insta_username):
+    user_id = get_user_id(insta_username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+    request_url = BASE_URL + 'users/{}/media/recent/?access_token={}'.format(user_id, TOKEN)
+    user_media = requests.get(request_url).json()
+    if user_media['meta']['code'] == 200:
+        if len(user_media['data']) > 0:
+            for index in range(len(user_media['data'])):
+                media_id = user_media['data'][index]['id']
+                comment_request = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, TOKEN)
+                # print 'GET request url :{}'.format(comment_request)
+                response = requests.get(comment_request).json()
+                if response['meta']['code'] == 200:
+                    for index in range(len(response['data'])):
+                        #Retrieve Comment Details
+                        #Add to Database
 
 # def get_info():
 #     #
