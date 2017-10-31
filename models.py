@@ -1,4 +1,8 @@
 import peewee
+import requests
+from main import get_user_id,BASE_URL,TOKEN
+
+
 database = peewee.SqliteDatabase('user_info.db')
 
 class User(peewee.Model):
@@ -34,6 +38,10 @@ def initialize_db():
 
 initialize_db()
 
-new_user = User(user_id=5, username="eeshani_p",full_name="Eeshani Patel", follows_count=200,followed_by_count=300)
-new_user.save()
-print new_user.username
+
+
+add_user_details('nimitsachdeva')
+
+# new_user = User(user_id=5, username="eeshani_p",full_name="Eeshani Patel", follows_count=200,followed_by_count=300)
+# new_user.save()
+# print new_user.username

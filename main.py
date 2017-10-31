@@ -36,10 +36,23 @@ def get_user_post(username):
     if user_media['meta']['code'] == 200:
         #extract post ID
         if len(user_media['data']):
-            img_name = user_media['data'][0]['id']+'.jpeg'
-            img_url = user_media['data'][0]['images']['standard_resolution']['url']
-            urllib.urlretrieve(img_url,img_name)
-            print "Your image has been saved"
+            for data_item in user_media['data']:
+                media_id = data_item['id']
+                media_type = data_item['type']
+                media_link = data_item[media_type + 's']['standard_resolution']['url']
+                query = Media.select().where(Media.media_id == media_id)
+                if len(query) > 0:
+                    query[0].media_type = media_type
+                    query[0].media_link = media_link
+                    query[0].save()
+                else:
+                    new_media = Media(user_id=user_id, media_id=media_id, media_type=media_type, media_link=media_link)
+                    new_media.save()
+                    return user_media['data'][0]['id']
+                    # img_name = user_media['data'][0]['id']+'.jpeg'
+                    # img_url = user_media['data'][0]['images']['standard_resolution']['url']
+                    # urllib.urlretrieve(img_url,img_name)
+                    #  print "Your image has been saved"
         else:
             print "Post doesn't exist"
         # pprint(user_media['data'][0])
@@ -208,6 +221,35 @@ def get_post_id(username):
         print 'Status code other than 200 received!'
         exit()
 
+def add_user_details(insta_username):
+    user_id = get_user_id(insta_username)
+    request_url = BASE_URL + 'users/{}/?access_token={}'.format(user_id, TOKEN)
+    response = requests.get(request_url).json()
+    # print response
+    if response['meta']['code'] == 200:
+        username = response['data']['username']
+        full_name = response['data']['full_name']
+        follows = response['data']['counts']['follows']
+        followed = response['data']['counts']['followed_by']
+
+        query = User.select().where(User.user_id == user_id)
+        if len(query) > 0:
+            # then user exist in the database as it will get all the details of the user, we will update it
+            query[0].username = username
+            query[0].full_name = full_name
+            query[0].follows_count = follows
+            query[0].followed_by_count = followed
+            query[0].save()
+        else:
+            # user do not exist in the database , we will save it
+            new_user = User(user_id=user_id, username=username, full_name=full_name,
+                            follows_count=follows, followed_by_count=followed)
+            new_user.save()
+
+    else:
+        print 'Status code other than 200 received!'
+        exit()
+
 
 # def get_info():
 #     #
@@ -262,7 +304,7 @@ def start_bot():
         else:
             print "wrong choice"
 
-start_bot()
+# start_bot()
 # like_a_post('nimitsachdeva')
 # get_post_id('nimitsachdeva')
 # post_a_comment('nimitsachdeva')
