@@ -12,8 +12,9 @@ BASE_URL = 'https://api.instagram.com/v1/'
 TOKEN = '4013952194.906cb6c.76bf3702386748f993f1d1d457549779'
 ACCESS_TOKEN = '?access_token={token}'.format(token=TOKEN)
 
+
 def get_user_id(name):
-    url = BASE_URL+ 'users/search?q={name}&access_token={token}'.format(name=name,token=TOKEN)
+    url = BASE_URL + 'users/search?q={name}&access_token={token}'.format(name=name, token=TOKEN)
     response = requests.get(url).json()
     # pprint(response)
     if response['meta']['code'] == 200:
@@ -31,10 +32,10 @@ def get_user_post(username):
     if user_id == None:
         print 'User does not exist!'
         exit()
-    request_url = BASE_URL + "users/{userid}/media/recent/?access_token={token}".format(userid=user_id,token=TOKEN)
+    request_url = BASE_URL + "users/{userid}/media/recent/?access_token={token}".format(userid=user_id, token=TOKEN)
     user_media = requests.get(request_url).json()
     if user_media['meta']['code'] == 200:
-        #extract post ID
+        # extract post ID
         if len(user_media['data']):
             for data_item in user_media['data']:
                 media_id = data_item['id']
@@ -55,10 +56,9 @@ def get_user_post(username):
                     #  print "Your image has been saved"
         else:
             print "Post doesn't exist"
-        # pprint(user_media['data'][0])
+            # pprint(user_media['data'][0])
     else:
         print "Status code other than 200 received!"
-
 
 
 def get_user_info(username):
@@ -66,7 +66,7 @@ def get_user_info(username):
     if user_id == None:
         print "This user does not exist!"
         exit()
-    request_url = BASE_URL + "users/{id}?access_token={token}".format(id=user_id,token=TOKEN)
+    request_url = BASE_URL + "users/{id}?access_token={token}".format(id=user_id, token=TOKEN)
     user_info = requests.get(request_url).json()
     # pprint(user_info)
     if user_info['meta']['code'] == 200:
@@ -84,29 +84,30 @@ def get_user_info(username):
 
 def get_own_post():
     END_POINT = 'users/self/media/recent/'
-    user_media = requests.get(BASE_URL+END_POINT+ACCESS_TOKEN).json()
+    user_media = requests.get(BASE_URL + END_POINT + ACCESS_TOKEN).json()
     # pprint(user_media)
     if user_media['meta']['code'] == 200:
-        #extract post ID
+        # extract post ID
         if len(user_media['data']):
-            img_name = user_media['data'][0]['id']+'.jpeg'
+            img_name = user_media['data'][0]['id'] + '.jpeg'
             img_url = user_media['data'][0]['images']['standard_resolution']['url']
-            urllib.urlretrieve(img_url,img_name)
+            urllib.urlretrieve(img_url, img_name)
             print "Your image has been saved"
         else:
             print "Post doesn't exist"
-        # pprint(user_media['data'][0])
+            # pprint(user_media['data'][0])
     else:
         print "Status code other than 200 received!"
 
+
 def self_info():
     END_POINT = 'users/self/'
-    request_url = (BASE_URL + END_POINT+ACCESS_TOKEN)
+    request_url = (BASE_URL + END_POINT + ACCESS_TOKEN)
     print 'GET request url : %s' % (request_url)
     user_info = requests.get(request_url).json()
     # pprint(user_info)
     if user_info['meta']['code'] == 200:
-        #print users details
+        # print users details
         if 'data' in user_info:
             print 'Username: %s' % (user_info['data']['username'])
             print 'No. of followers: %s' % (user_info['data']['counts']['followed_by'])
@@ -133,7 +134,7 @@ def like_a_post(username):
 def post_a_comment(username):
     media_id = get_post_id(username)
     comment = raw_input("Your comment: ")
-    payload = {"access_token": TOKEN, "text" : comment}
+    payload = {"access_token": TOKEN, "text": comment}
     request_url = BASE_URL + 'media/{}/comments'.format(media_id)
     make_comment = requests.post(request_url, payload).json()
     if make_comment['meta']['code'] == 200:
@@ -144,7 +145,7 @@ def post_a_comment(username):
 
 def delete_negative_comment(username):
     media_id = get_post_id(username)
-    request_url = BASE_URL + 'media/{}/comments/?access_token={}'.format(media_id,TOKEN)
+    request_url = BASE_URL + 'media/{}/comments/?access_token={}'.format(media_id, TOKEN)
     # print 'GET request url : %s' % (request_url)
     comment_info = requests.get(request_url).json()
     if comment_info['meta']['code'] == 200:
@@ -173,7 +174,7 @@ def delete_negative_comment(username):
 
 def get_like_list(username):
     media_id = get_post_id(username)
-    request_url = BASE_URL + 'media/{}/likes?access_token={}'.format(media_id,TOKEN)
+    request_url = BASE_URL + 'media/{}/likes?access_token={}'.format(media_id, TOKEN)
     like_info = requests.get(request_url).json()
 
     if like_info['meta']['code'] == 200:
@@ -221,6 +222,7 @@ def get_post_id(username):
         print 'Status code other than 200 received!'
         exit()
 
+
 def add_user_details(insta_username):
     user_id = get_user_id(insta_username)
     request_url = BASE_URL + 'users/{}/?access_token={}'.format(user_id, TOKEN)
@@ -233,7 +235,7 @@ def add_user_details(insta_username):
         followed = response['data']['counts']['followed_by']
 
         query = User.select().where(User.user_id == user_id)
-        if len(query) > 0:
+        if len(query):
             # then user exist in the database as it will get all the details of the user, we will update it
             query[0].username = username
             query[0].full_name = full_name
@@ -259,7 +261,7 @@ def add_comments(insta_username):
     request_url = BASE_URL + 'users/{}/media/recent/?access_token={}'.format(user_id, TOKEN)
     user_media = requests.get(request_url).json()
     if user_media['meta']['code'] == 200:
-        if len(user_media['data']) > 0:
+        if len(user_media['data']):
             for index in range(len(user_media['data'])):
                 media_id = user_media['data'][index]['id']
                 comment_request = BASE_URL + 'media/{}/comments?access_token={}'.format(media_id, TOKEN)
@@ -267,15 +269,16 @@ def add_comments(insta_username):
                 response = requests.get(comment_request).json()
                 if response['meta']['code'] == 200:
                     for index in range(len(response['data'])):
-                        #Retrieve Comment Details
-                        #Add to Database
+                        pass
+                # Retrieve Comment Details
+                # Add to Database
+
 
 # def get_info():
 #     #
 #     pprint(user_info.json())
 # self_info()
 # get_user_post('nimitsachdeva')
-
 def start_bot():
     while True:
         print '\n'
@@ -323,10 +326,10 @@ def start_bot():
         else:
             print "wrong choice"
 
-# start_bot()
-# like_a_post('nimitsachdeva')
-# get_post_id('nimitsachdeva')
-# post_a_comment('nimitsachdeva')
-# delete_negative_comment('nimitsachdeva')
-# get_like_list("nimitsachdeva")
-# get_comment_list('nimitsachdeva')
+            # start_bot()
+            # like_a_post('nimitsachdeva')
+            # get_post_id('nimitsachdeva')
+            # post_a_comment('nimitsachdeva')
+            # delete_negative_comment('nimitsachdeva')
+            # get_like_list("nimitsachdeva")
+            # get_comment_list('nimitsachdeva')
