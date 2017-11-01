@@ -1,8 +1,10 @@
 import requests
+from models import *
 from pprint import pprint
 import urllib
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
+
 
 # response = requests.get('https://jsonbin.io/b/59d0f30408be13271f7df29c').json()
 # APP_ACCESS_TOKEN = response['access_token']
@@ -270,8 +272,6 @@ def add_comments(insta_username):
                 if response['meta']['code'] == 200:
                     for index in range(len(response['data'])):
                         pass
-                # Retrieve Comment Details
-                # Add to Database
 
 
 # def get_info():
@@ -293,6 +293,8 @@ def start_bot():
         print "g.Get a list of comments on the recent post of a user\n"
         print "h.Make a comment on the recent post of a user\n"
         print "i.Delete negative comments from the recent post of a user\n"
+        print "j.Add user details to the database\n"
+        print "k.Add comments of the post to database\n"
         print "z.Exit"
 
         choice = raw_input("Enter you choice: ")
@@ -321,12 +323,21 @@ def start_bot():
         elif choice == "i":
             insta_username = raw_input("Enter the username of the user: ")
             delete_negative_comment(insta_username)
+        elif choice == "j":
+            insta_username = raw_input("Enter the username of the user: ")
+            add_user_details(insta_username)
+        elif choice == "k":
+            insta_username = raw_input("Enter the username of the user: ")
+            add_comment(insta_username)
         elif choice == "z":
             exit()
         else:
             print "wrong choice"
 
-            # start_bot()
+start_bot()
+initialize_db()
+
+
             # like_a_post('nimitsachdeva')
             # get_post_id('nimitsachdeva')
             # post_a_comment('nimitsachdeva')
